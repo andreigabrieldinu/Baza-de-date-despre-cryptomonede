@@ -1,0 +1,775 @@
+DROP TABLE Z_CRYPTOMONEDE CASCADE CONSTRAINTS;
+DROP TABLE Z_PLATFORME CASCADE CONSTRAINTS;
+DROP TABLE Z_MONEDE_PLATFORME CASCADE CONSTRAINTS;
+DROP TABLE Z_INFORMATII CASCADE CONSTRAINTS;
+DROP TABLE Z_FONDATORI CASCADE CONSTRAINTS;
+DROP TABLE Z_MONEDE_FONDATORI CASCADE CONSTRAINTS;
+DROP TABLE Z_PRETURI_SI_DATA CASCADE CONSTRAINTS;
+DROP TABLE Z_MONEDA_SI_PRET CASCADE CONSTRAINTS;
+
+CREATE TABLE Z_CRYPTOMONEDE
+(
+ID_MONEDA INT NOT NULL,
+NUME_MONEDA VARCHAR2(40) NOT NULL,
+SITE_MONEDA VARCHAR2(150) NOT NULL,
+MONEDA_DERIVATA_DIN INT,
+DATA_LANSARII DATE NOT NULL,
+MECANISM_DE_CONSENS VARCHAR2(40),
+PORTOFELUL_MONEDEI VARCHAR2(60),
+TIP_MONEDA VARCHAR2(60),
+CONSTRAINT CRYPTOMONEDE_PK PRIMARY KEY(ID_MONEDA),
+CONSTRAINT CRYPTOMONEDE_FK FOREIGN KEY(MONEDA_DERIVATA_DIN) 
+REFERENCES Z_CRYPTOMONEDE(ID_MONEDA)
+);
+
+CREATE TABLE Z_PLATFORME
+(
+ID_PLATFORMA INT NOT NULL,
+NUME_PLATFORMA VARCHAR(30) NOT NULL,
+CONSTRAINT PLATFORME_PK PRIMARY KEY(ID_PLATFORMA)
+);
+
+CREATE TABLE Z_MONEDE_PLATFORME
+(
+ID_MONEDA INT NOT NULL,
+ID_PLATFORMA INT NOT NULL,
+CONSTRAINT MONEDE_PLATFORME_PK PRIMARY KEY(ID_MONEDA,ID_PLATFORMA),
+CONSTRAINT MONEDE_PLATFORME_FK1 FOREIGN KEY(ID_MONEDA) REFERENCES Z_CRYPTOMONEDE,
+CONSTRAINT MONEDE_PLATFORME_FK2 FOREIGN KEY(ID_PLATFORMA) REFERENCES Z_PLATFORME
+);
+
+CREATE TABLE Z_INFORMATII
+(
+ID_MONEDA INT NOT NULL,
+ID_INFORMATIE INT NOT NULL,
+CONTINUT_INFORMATIE VARCHAR2(4000) NOT NULL,
+CONSTRAINT INFORMATII_PK PRIMARY KEY(ID_MONEDA,ID_INFORMATIE),
+CONSTRAINT INFORMATII_FK1 FOREIGN KEY(ID_MONEDA) REFERENCES Z_CRYPTOMONEDE
+);
+
+CREATE TABLE Z_MONEDE_INFORMATII
+(
+ID_MONEDA INT NOT NULL,
+ID_INFORMATIE INT NOT NULL,
+CONSTRAINT MONEDE_INFORMATII_PK PRIMARY KEY(ID_MONEDA,ID_INFORMATIE),
+CONSTRAINT MONEDE_INFORMATII_FK1 FOREIGN KEY(ID_MONEDA) REFERENCES Z_CRYPTOMONEDE,
+CONSTRAINT MONEDE_INFORMATII_FK2 FOREIGN KEY(ID_INFORMATIE) REFERENCES Z_INFORMATII
+CONTINUT_INFORMATIE VARCHAR2(4000) NOT NULL,
+);
+
+CREATE TABLE Z_FONDATORI
+(
+ID_FONDATOR INT NOT NULL,
+NUME_FONDATOR VARCHAR2(100) NOT NULL,
+CONSTRAINT FONDATOR_PK PRIMARY KEY(ID_FONDATOR)
+);
+
+CREATE TABLE Z_MONEDE_FONDATORI
+(
+ID_MONEDA INT NOT NULL,
+ID_FONDATOR INT NOT NULL,
+CONSTRAINT MONEDE_FONDATORI_PK PRIMARY KEY(ID_MONEDA,ID_FONDATOR),
+CONSTRAINT MONEDE_FONDATORI_FK1 FOREIGN KEY(ID_MONEDA) REFERENCES Z_CRYPTOMONEDE,
+CONSTRAINT MONEDE_FONDATORI_FK2 FOREIGN KEY(ID_FONDATOR) REFERENCES Z_FONDATORI
+);
+
+CREATE TABLE Z_PRETURI_SI_DATA
+(
+PRET float NOT NULL,
+DATA_PRETULUI DATE NOT NULL,
+NUMAR_MONEDE_DISPONIBILE INT,
+CONSTRAINT PRETURI_SI_DATA_PK PRIMARY KEY(PRET)
+);
+
+CREATE TABLE Z_MONEDA_SI_PRET
+(
+ID_MONEDA INT NOT NULL,
+PRET float NOT NULL,
+CONSTRAINT MONEDA_SI_PRET_PK PRIMARY KEY(ID_MONEDA,PRET),
+CONSTRAINT MONEDA_SI_PRET_FK1 FOREIGN KEY(ID_MONEDA) REFERENCES Z_CRYPTOMONEDE,
+CONSTRAINT MONEDA_SI_PRET_FK2 FOREIGN KEY(PRET) REFERENCES Z_PRETURI_SI_DATA
+);
+
+INSERT INTO Z_PLATFORME VALUES(100,'Revolut');
+INSERT INTO Z_PLATFORME VALUES(101,'Crypto.com');
+INSERT INTO Z_PLATFORME VALUES(102,'Binance');
+INSERT INTO Z_PLATFORME VALUES(103,'Celsius');
+INSERT INTO Z_PLATFORME VALUES(104,'KuCoin');
+INSERT INTO Z_PLATFORME VALUES(105,'Gate.io');
+INSERT INTO Z_PLATFORME VALUES(106,'Coinbase');
+INSERT INTO Z_PLATFORME VALUES(107,'Kraken');
+INSERT INTO Z_PLATFORME VALUES(108,'Changelly');
+INSERT INTO Z_PLATFORME VALUES(109,'Huobi');
+INSERT INTO Z_PLATFORME VALUES(110,'Bitfinex');
+INSERT INTO Z_PLATFORME VALUES(111,'Toate');
+
+--INCEPUT INSERT-URI BITCOIN
+INSERT INTO Z_CRYPTOMONEDE VALUES(1,'Bitcoin','https://bitcoin.org',NULL,'03.01.2009','Proof of Work','Bitcoin Wallet','Finante Descentralizate');
+
+INSERT INTO Z_FONDATORI VALUES(10,'Nick Szabo');
+INSERT INTO Z_MONEDE_FONDATORI VALUES(1,10); 
+INSERT INTO Z_MONEDE_PLATFORME VALUES(1,111);
+
+INSERT INTO Z_INFORMATII VALUES(1,1000,'Bitcoin (din limba englez? bit: unitate de informa?ie binar? ?i coin: moned?), este un sistem de plat? electronic? descentralizat ?i o moned? digital? (criptomoned?) opensource creat? în 2009 de Satoshi Nakamoto.[1][2] Bitcoin (BTC) a fost creat pentru a asigura protec?ia investi?iilor ?i finan?area liber? a afacerilor, f?r? a face apel la institu?ii financiare ?i în afara oric?rei constrângeri ?i reglement?ri. Numele Bitcoin se refer? de asemenea ?i la programul opensource pentru folosirea acestor monede, cât ?i la re?eaua peer-to-peer (de la egal la egal) pe care acesta o formeaz?.
+Spre deosebire de majoritatea monedelor, Bitcoin nu se bazeaz? pe încrederea într-un emitent central. Bitcoin folose?te o baz? de date distribuit? peste noduri ale unei re?ele de la egal la egal (peer-to-peer) pentru a inventaria tranzac?iile ?i se folose?te de criptografie pentru a furniza func?ii de baz? pentru securitate cum ar fi asigurarea c? bitcoinii nu pot fi cheltui?i decât de cel care îi de?ine ?i doar o singur? dat?.');
+INSERT INTO Z_INFORMATII VALUES(1,1001,'Sistemul Bitcoin func?ioneaz? pe baza unei re?ele peer-to-peer ?i a criptografiei asimetrice. Criptografia asimetric? utilizeaz? o pereche de chei asimetrice (public? ?i privat?). Termenul de „asimetric” provine de la utilizarea de chei diferite pentru a îndeplini dou? func?ii opuse (criptare ?i decriptare), fiecare fiind inversul celeilalte. Transferul de sume între conturile publice folose?te cheile criptografice publice pentru a confirma tranzac?iile ?i a preveni dubla-cheltuire.
+Cheia public? este utilizat? pentru criptarea unui text, care apoi nu poate fi decodificat decât folosind cheia privat? corespunz?toare. Criptarea cu cheie public? este folosit? în tranzac?iile cu Bitcoin pentru a asigura confiden?ialitatea.
+Cheia privat? este utilizat? pentru a decripta textul cifrat ?i pentru a crea o semn?tur? digital?. Un mesaj creat cu cheia privat? a emi??torului poate fi verificat de oricine, prin acces la cheia public? corespunz?toare, astfel asigurându-se autenticitatea mesajului.');
+INSERT INTO Z_INFORMATII VALUES(1,1002,'Orice persoan? care particip? la re?eaua bitcoin de?ine un portofel care con?ine un num?r arbitrar de perechi de chei criptografice. Cheile publice sau adrese bitcoin func?ioneaz? ca punctul terminal de primire a tuturor pl??ilor. Adresele nu con?in nicio informa?ie despre de?in?torul lor ?i sunt în general anonime.[7] Adresele în form? care pot fi citite de om sunt ?iruri de numere ?i litere aleatorii lungi de aproximativ 33 de caractere, întotdeauna începând cu cifra 1, de forma 175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W. Utilizatorii bitcoin pot de?ine multiple adrese, ?i de fapt pot genera noi adrese f?r? limite practice, deoarece generarea unei noi adrese necesit? relativ pu?in? putere computa?ional?, echivalentul la a genera o pereche de chei public/private, ?i nu necesit? niciun contact cu vreun nod din re?ea. Crearea de adrese de unic? folosin?? ajut? la men?inerea anonimatului utilizatorului.');
+
+INSERT INTO Z_PRETURI_SI_DATA VALUES(841.49,'01.01.2014',12340000);
+INSERT INTO Z_PRETURI_SI_DATA VALUES(258.39,'01.06.2015',14320000);
+INSERT INTO Z_PRETURI_SI_DATA VALUES(7251.28,'01.12.2019',18300000);
+INSERT INTO Z_PRETURI_SI_DATA VALUES(11118.92,'01.07.2020',18450000);
+INSERT INTO Z_PRETURI_SI_DATA VALUES(34622.37,'01.01.2021',18610000);
+
+INSERT INTO Z_MONEDA_SI_PRET VALUES(1,841.49);
+INSERT INTO Z_MONEDA_SI_PRET VALUES(1,258.39);
+INSERT INTO Z_MONEDA_SI_PRET VALUES(1,7251.28);
+INSERT INTO Z_MONEDA_SI_PRET VALUES(1,11118.92);
+INSERT INTO Z_MONEDA_SI_PRET VALUES(1,34622.37);
+
+--SFARSIT INSERT-URI BITCOIN
+
+--INSERTURI MONEDA MEA
+INSERT INTO Z_CRYPTOMONEDE VALUES(2,'MonedaMea','https://monedamea.org',NULL,'31.12.2021','Proof of Stake','MonedaMea Wallet','WEB 3.0');
+
+INSERT INTO Z_FONDATORI VALUES(11,'Dinu Andrei Gabriel');
+INSERT INTO Z_MONEDE_FONDATORI VALUES(2,11); 
+
+INSERT INTO Z_MONEDE_PLATFORME VALUES(2,101);
+
+INSERT INTO Z_INFORMATII VALUES(2,1003,'Cea mai inteligenta moneda s-a lansat la data de 31.12.2021 si este moneda lui Dinu Andrei Gabriel care face tot ce pot sa faca toate monedele combinat');
+
+INSERT INTO Z_PRETURI_SI_DATA VALUES(999999.99,'31.12.2021',10);
+INSERT INTO Z_MONEDA_SI_PRET VALUES(2,999999.99);
+--SFARSIT INSERT-URI MONEDA MEA
+
+--INCEPUT INSERT-URI ETHEREUM
+INSERT INTO Z_CRYPTOMONEDE VALUES(3,'Ethereum','https://ethereum.org',NULL,'30.07.2015','Proof of Work si Proof of Stake','Ethereum Wallet','Contracte Inteligente');
+INSERT INTO Z_FONDATORI VALUES(12,'Vitalik Buterin');
+INSERT INTO Z_FONDATORI VALUES(13,'Mihai Alisie');
+INSERT INTO Z_FONDATORI VALUES(14,'Anthony Di Lorio');
+INSERT INTO Z_FONDATORI VALUES(15,'Charles Hoskinson');
+INSERT INTO Z_MONEDE_FONDATORI VALUES(3,12); 
+INSERT INTO Z_MONEDE_FONDATORI VALUES(3,13);
+INSERT INTO Z_MONEDE_FONDATORI VALUES(3,14);
+INSERT INTO Z_MONEDE_FONDATORI VALUES(3,15); 
+
+insert into z_monede_platforme values(3,111);
+
+INSERT INTO Z_INFORMATII VALUES(3,1004,'Ethereum este o platform? ?i sistem de operare open-source, distribuit, pe baz? de blockchain, ce ofer? posibilitatea implement?rii contractelor smart.[5]Ether (ETH) este criptomoneda a c?rui blockchain este generat de platforma Ethereum. Etherii pot fi transfera?i între conturi ?i utiliza?i pentru a recompensa participan?ii care mineaz? (i.e. rezolv? calcule matematice pentru securizarea re?elei) pentru munca depus?.[6] Ethereum ofer? o ma?in? virtual? descentralizat? de tip Turing-complete, numit? Ethereum Virtual Machine (EVM), care poate executa script-uri folosind o re?ea interna?ional? de noduri publice. "Gazul" este un mecanism de stabilire a pre?urilor de tranzac?ie, ce are rolul de a atenua spam-ul ?i de a aloca resurse în re?ea.');
+INSERT INTO Z_INFORMATII VALUES(3,1005,'Ethereum 2.0 este proiectat pentru a fi lansat în trei faze:
+„Faza 0”, cunoscut? ?i ca „The Beacon Chain” a fost lansat? la 1 decembrie 2020 ?i a creat Beacon Chain, un blockchain proof-of-stake (PoS) care va ac?iona ca centru central de coordonare ?i consens al Ethereum 2.0.[34][35][36]
+„Faza 1”, cunoscut? ?i sub denumirea de „The Merge”, va fuziona lan?ul Beacon cu actuala re?ea Ethereum, trecându-?i mecanismul de consens de la proof-of-work la proof-of-stake.[37] Începând cu 19 august 2021, este de a?teptat s? fie lansat în prima jum?tate a anului 2022.[30]
+„Faza 2”, cunoscut? ?i sub denumirea de „lan?uri segmentate” va implementa execu?ia de stat în lan?urile segmentate,[15] lan?ul actual Ethereum 1.0 se a?teapt? s? devin? unul dintre shard-urile Ethereum 2.0. Lan?urile de fragmente vor împr??tia sarcina re?elei în 64 de lan?uri noi. Începând cu 28 august 2021, este de a?teptat s? fie lansat în 2022.[31]');
+INSERT INTO Z_INFORMATII VALUES(3,1006,'Ether este diferit de Bitcoin ( criptomoneda cu cea mai mare capitalizare de pia?? cf. ianuarie 2018) în mai multe aspecte:
+Limbajul de scripting al Ethereum este Turing-complete, ceea ce permite crearea oric?ror tipuri de aplica?ii pe plaform?.
+Ethereum permite crearea de smart contracts (contracte inteligente).
+Timpul de generare a unui bloc este între 14 ?i 15 secunde, în compara?ie cu 10 minute pentru bitcoin.[39]
+Pentru sistemul de consens de tip proof-of-work, Ethereum folose?te algoritmul Ethash, care reduce avantajul circuitelor integrate specifice aplica?iilor (ASICs) în minerit.
+Taxele de tranzac?ie difer? în func?ie de complexitatea de calcul, l??imea de band? folosit? ?i spa?iul de stocare necesar (folosind sistemul de "gaz"), în timp ce tranzac?iile bitcoin concureaz? prin dimensiunea tranzac?iei, în octe?i.[39]
+Unit??ile de gaz au fiecare câte un pre? care poate fi specificat într-o tranzac?ie. Acest lucru este de obicei m?surat în unit??i "Gwei". Tranzac?iile Bitcoin au, de obicei, taxele specificate în "satoshis" pe octet.
+Ethereum este planificat s? schimbe mecanismul de consens în proof-of-stake. În prezent, Ethereum este un hibrid între proof-of-work ?i proof-of-stake.
+Spre deosebire de bitcoin, num?rul de etheri care poate fi minerit nu este limitat.');
+
+INSERT INTO Z_PRETURI_SI_DATA VALUES(745.20,'30.12.2017',1573476);
+INSERT INTO Z_PRETURI_SI_DATA VALUES(730.15,'02.01.2021',189591430.63);
+INSERT INTO Z_MONEDA_SI_PRET VALUES(2,745.20);
+INSERT INTO Z_MONEDA_SI_PRET VALUES(2,730.15); 
+--sfarsit insert-uri ethereum
+
+--inceput insert uri bitcoin cash
+INSERT INTO Z_CRYPTOMONEDE VALUES(4,'Bitcoin Cash','https://bitcoincash.org',1,'21.07.2017','Proof of Work','BitcoinCash Wallet','Finante Descentralizate');
+
+INSERT INTO Z_MONEDE_FONDATORI VALUES(4,10); 
+
+INSERT INTO Z_MONEDE_PLATFORME VALUES(4,100);
+INSERT INTO Z_MONEDE_PLATFORME VALUES(4,101);
+INSERT INTO Z_MONEDE_PLATFORME VALUES(4,102);
+INSERT INTO Z_MONEDE_PLATFORME VALUES(4,103);
+
+INSERT INTO Z_INFORMATII VALUES(4,1007,'Bitcoin Cash este un hard fork al Bitcoin, cea mai veche ?i mai cunoscut? criptomoned? din lume. Spre deosebire de re?elele personalizate, cum ar fi Ethereum (ETH), Bitcoin Cash inten?ioneaz? s? ofere o alternativ? la re?eaua Bitcoin propunând o solu?ie de scalare diferit? a bazei de cod Bitcoin Core. Principala diferen?? între Bitcoin ?i Bitcoin Cash este dimensiunea blocului.');
+INSERT INTO Z_INFORMATII VALUES(4,1008,'Datorit? codului s?u atât de similar cu codul Bitcoin, cele dou? criptomonede au multe în comun. Modul în care un utilizator opereaz? Bitcoin Cash nu difer? de un utilizator care opereaz? Bitcoin.
+Diferen?a se g?se?te numai în preferin?ele sale de scalare; în timp ce Bitcoin alege s? opteze pentru tehnologii care l-ar ajuta s? se extind? f?r? cre?terea dimensiunii blocurilor, Bitcoin Cash opteaz? pentru utilizarea unei dimensiuni mai mari a blocurilor, respingând totodat? eforturile de scalare f?cute prin integrarea noilor tehnologii.
+Bitcoin Cash func?ioneaz?, de asemenea, pe acela?i mecanism de consens al Proof of Work ca Bitcoin, utilizând ceea ce se nume?te un algoritm securizat Hash (SHA).');
+
+INSERT INTO Z_PRETURI_SI_DATA VALUES(1748.74,'07.05.2018',21000000);
+INSERT INTO Z_PRETURI_SI_DATA VALUES(433.52,'31.12.2021',21000000);
+
+INSERT INTO Z_MONEDA_SI_PRET VALUES(4,1748.74);
+INSERT INTO Z_MONEDA_SI_PRET VALUES(4,433.52);
+--sfarsit inserturi bitcoin cash
+
+--inceput insert-uri bitcoin SV
+INSERT INTO Z_CRYPTOMONEDE VALUES(5,'Bitcoin SV','https://bitcoinsv.com',4,'15.11.2018','Proof of Work','BitcoinSV Wallet','Finante Descentralizate');
+INSERT INTO Z_FONDATORI VALUES(16,'Craig Wright');
+INSERT INTO Z_MONEDE_FONDATORI VALUES(4,16); 
+
+INSERT INTO Z_MONEDE_PLATFORME VALUES(5,109);
+INSERT INTO Z_MONEDE_PLATFORME VALUES(5,104);
+INSERT INTO Z_MONEDE_PLATFORME VALUES(5,103);
+
+insert into z_informatii values(5,1009,'Fiind o criptomoned?, Bitcoin SV nu are b?nci sau o autoritate emitent?. Tranzac?iile sunt notate pe un singur registru de c?tre mineri, fiecare p?strând copia complet? a acestuia. Minerii trebuie s? valideze tranzac?iile printr-un proces numit Dovad? a Muncii (PoW - Proof of Work), în care concureaz? folosind puterea de calcul pentru a rezolva probleme matematice, proces care poart? denumirea de minerit. Fiecare procedur? reu?it? de minerit creeaz? un bloc care con?ine un set de tranzac?ii validate, care mai apoi vor fi copiate de c?tre al?i mineri. Eforturile minerilor au ca rezultat o recompens? bloc: monede BSV nou emise sunt acordate minerului care rezolv? primul ecua?iile.');
+insert into z_informatii values(5,1010,'Fiecare tranzac?ie efectuat? cu Bitcoin SV trebuie validat? înainte de a fi scris? pe blockchain. Acest proces exist? pentru a asigura faptul c? niciun utilizator nu î?i poate cheltui monedele de dou? ori. Dac? acest lucru nu se face, un utilizator ar putea efectua o tranzac?ie care nu este scris? pe registru, oferindu-i ?ansa de a folosi din nou monedele deja cheltuite. Aceasta se nume?te problema „cheltuirii duble”, iar minerii joac? un rol crucial în rezolvarea ei. Având în vedere c? fiecare tranzac?ie este scris? într-un registru care este validat ?i apoi de?inut de to?i minerii, activitatea frauduloas? este practic imposibil?.');
+
+insert into z_preturi_si_data values(163.09,'02.01.2021',2696915);
+insert into z_moneda_si_pret values(5,163.09);
+--sfarsit insert uri bitcoin SV
+
+--inceput insert-uri cardano
+Insert into z_cryptomonede values(6,'ADA','https://cardano.org',NULL,'29.09.2017','Proof of Stake','Daedalus Wallet','Contracte Inteligente si Lanturi laterale');
+Insert into z_monede_fondatori values(6,15);
+
+INSERT INTO Z_MONEDE_PLATFORME VALUES(6,111);
+
+insert into z_informatii values(6,1011,'Monedele sunt minate ?i deciziile sunt luate printr-un mecanism de consens de tip proof-of-stake numit Ouroboros, în loc de mecanism de tip proof-of-work; consensul este generat de votul celor care de?in moneda.[7][8] În acest protocol, liderii de slot-uri genereaz? noi blocuri în blockchain ?i verific? tranzac?iile. Oricine de?ine monede Ada poate deveni un lider de slot.[9] În plus, mecanismul de tip proof-of-stake este mai eficient din punct de vedere energetic în compara?ie cu proof-of-work. [10] Blockchain-ul Cardano a fost recunoscut de legiuitori în jurisdic?ii financiare de top, precum Elve?ia. Echipa ofer? împreun? platforme educa?ionale ?i academice blockchain pentru universit??ile na?ionale din Uzbekistan');
+insert into z_informatii values(6,1012,'Criptomoneda Ada opereaz? un layer (din eng. "strat") de blockchain numit Cardano Settlement Layer (CSL). CSL este un layer/strat de contabilitate ce con?ine registrul tranzac?iilor. Un al doilea layer numit Cardano Computation Layer (CCL) va sus?ine contractele smart ?i aplica?iile descentralizate.[12] Aceast? arhitectur? pe mai multe straturi permite Cardano s? fac? update-uri de tipul "soft fork" într-un mod mult mai u?or decât o face Ethereum în momentul de fa??; în Ethereum, aceste dou? straturi sunt interconectate.[13]. Lan?uri laterale (eng. side chains) sunt utilizate pentru a conecta tranzac?iile între CSL ?i CCL.');
+
+insert into z_preturi_si_data values(1.37,'02.01.2022',33930000000);
+
+insert into z_moneda_si_pret values(6,1.37);
+--sfarsit insert-uri cardano
+select* from z_fondatori;
+--inceput insert-uri chainlink
+insert into z_cryptomonede values(7,'LINK','https://chain.link','3','23.03.2017','Proof of Work','Chainlink Wallet','ERC20');
+insert into z_fondatori values(17,'Sergey Nazarov');
+insert into z_fondatori values(18,'Steve Ellis');
+
+insert into z_monede_fondatori values(7,17);
+insert into z_monede_fondatori values(7,18);
+
+INSERT INTO Z_MONEDE_PLATFORME VALUES(7,102);
+INSERT INTO Z_MONEDE_PLATFORME VALUES(7,109);
+
+insert into z_informatii values(7,1013,'Tokenul LINK al lui Chainlink este un jeton ERC677, o extensie a ERC20 . Tokenurile ac?ioneaz? ca înc?rc?turi utile de date, alimentând datele necesare din sursele în afara lan?ului c?tre contractele inteligente , care apoi ac?ioneaz? în consecin?? ca r?spuns la datele furnizate de token.');
+insert into z_informatii values(7,1014,'Re?eaua Oracle descentralizat? a Chainlink este o infrastructur? tehnologic? open-source care permite oric?rui blockchain s? se conecteze în siguran?? la date ?i resurse de calcul din afara lan?ului. Nodurile de re?ea preiau, valideaz? ?i livreaz? date din mai multe surse în blockchain pentru a executa contracte inteligente. Operatorii de noduri sunt compensa?i cu criptomoneda nativ? a re?elei , LINK.');
+
+insert into z_preturi_si_data values(26.62,'30.08.2021',467000000);
+insert into z_preturi_si_data values(22.13,'27.12.2021',467460000);
+
+insert into z_moneda_si_pret values(7,26.62);
+insert into z_moneda_si_pret values(7,22.13);
+--sfarsit insert uri chainlink 
+
+--insert uri dogecoin
+insert into z_cryptomonede values(8,'Dogecoin','https://dogecoin.com/',null,'06.12.2013',null,'Multidoge','Meme Coin');
+insert into z_fondatori values(19,'Billy Markus');
+insert into z_fondatori values(20,'Jackson Palmer');
+
+insert into z_monede_fondatori values(8,19);
+insert into z_monede_fondatori values(8,20);
+
+insert into z_monede_platforme values(8,100);
+insert into z_monede_platforme values(8,101);
+insert into z_monede_platforme values(8,102);
+insert into z_monede_platforme values(8,103);
+insert into z_monede_platforme values(8,104);
+
+insert into z_informatii values(8,1015,'În 2013, imaginea cu un câine Shiba Inu supranumit Doge circula peste tot pe Internet. Adesea, imaginea ap?rea înconjurat? de text, transmi?ând un monolog intern sarcastic, scris inten?ionat gre?it ?i folosind fontul Comic Sans. Creatorii DogeCoin au adoptat acest mod de comunicare specific post?rilor Doge ?i pentru criptomoneda lor, care ini?ial era o glum? cu privire la nebunia colectiv? pentru BitCoin.');
+insert into z_informatii values(8,1016,'Restul criptomonedelor se iau în serios. Dar nu DogeCoin. Acest lucru face moneda s? par? mai accesibil? în lumea rigid? a finan?elor online.
+Timp de câ?iva ani, DogeCoin a r?mas la grani?a dintre util ?i obscur - de?i tranzac?iile erau în cre?tere, nu era o moned? de uz larg. În 2018, platforma de trading Robinhood a ad?ugat DogeCoin în portofoliul s?u, astfel moneda s-a putut cump?ra ?i vinde acolo.');
+
+insert into z_preturi_si_data values(0.173575,'22.04.2021',132620000000);
+insert into z_preturi_si_data values(0.19,'21.08.2021',138940000000);
+
+insert into z_moneda_si_pret values(8,0.173575);
+insert into z_moneda_si_pret values(8,0.19);
+--sfarsit insert dogecoin
+
+--inceput insert tether usd
+insert into z_cryptomonede values(9,'Tether','https://tether.to',3,'04.04.2018',null,'Tether Wallet','Stable Coin');
+insert into z_informatii values(9,1017,'Tether este un tip de crypto-moned? cunoscut? ?i sub numele de stablecoin,
+Stablecoinurile sunt concepute s? aib? valoarea legat? de o moned? de schimb, precum euro, dolarul american sau lira sterlin?. În cazul Tether, crypto-moneda lor principal?, USDT – reflect? pre?ul dolarului american. Tether sus?ine faptul c? fiecare moned? emis? este acoperit? în contravaloarea ei în dolari. Valoarea crypto-monedei este men?inut? efectiv în jurul valorii de $1 – de algoritmi de trading sau botsi care tranzac?ioneaz? automat atunci când pre?ul are fluctua?ii de la valoarea stabilit?.');
+
+--sfarsit insert uri tether
+--Inceput Select-uri
+
+--selectati monedele care au un mecanism de consens de tipul 'proof of work'
+select nume_moneda,data_lansarii,mecanism_de_consens,tip_moneda from z_cryptomonede where 
+mecanism_de_consens like '%Work%';
+
+--selectati monedele care nu au un mecanism de consens
+select nume_moneda,data_lansarii,mecanism_de_consens,tip_moneda from z_cryptomonede where
+mecanism_de_consens is null;
+
+--selectati monedele care au data lansarii pana in anul 2017
+select * from z_cryptomonede where data_lansarii<=to_date('31.12.2016','DD.MM.YYYY');
+
+--selectati monedele al caror an de lansare este 2017
+select * from z_cryptomonede where extract(year from data_lansarii)=2017;
+
+--selectati toate preturile pentru toate monezile cu data mai mare de 05.10.2019
+select * from z_preturi_si_data where to_char(data_pretului,'yyyy.mm.dd')>'2019.10.05';
+
+--selectarea numelor fondatorilor ce au in ultimele 10 litere grupul 'son'
+select id_fondator,nume_fondator,substr(nume_fondator,-10) from z_fondatori
+where nume_fondator like '%son%';
+
+--actualizati data pretului cu 31.12.2022 pentru monedele care se afla in anul trecut
+update z_preturi_si_data set data_pretului='31.12.2021'
+where extract(year from data_pretului)=extract(year from sysdate);
+
+--folositi decode pentru atributul mecanism_de_consens intr-un mod adecvat
+select id_moneda,nume_moneda,data_lansarii,mecanism_de_consens,tip_moneda,
+decode(mecanism_de_consens,'Proof of Work','W','Proof of Stake','S',
+'Proof of Work si Proof of Stake','W si S',nvl('Niciunul',null)) Abrevierea_Mecanismelor 
+from z_cryptomonede;
+
+update z_preturi_si_data set numar_monede_disponibile=100000 where numar_monede_disponibile=1000;
+
+--folositi instructiunea case pentru a numi capitalizarea de piata (capitalizarea de piata=pret*numar_monezi_disponibile)
+select data_pretului,numar_monede_disponibile,pret,
+case when numar_monede_disponibile*pret<2000000000 then 'Market Cap mic'
+     when numar_monede_disponibile*pret between 2000000000 and 80000000000 then 'Market Cap mediu'
+     when numar_monede_disponibile*pret>80000000000 then 'Market Cap mare'
+     else 'Ceva nu a mers bine' end Tip_Market_Caps
+from z_preturi_si_data order by 4 asc;
+
+--stergeti platformele pe care sunt vandute monedele cu id 1 si 4 (doar instantele care se afla in tabela de intersectie)
+--delete from z_monede_platforme where id_moneda in (1,4);
+--rollback;
+
+--selectati informatiile pentru monedele care sunt mostenite de o alta moneda
+select c.id_moneda,nume_moneda,tip_moneda,continut_informatie from z_cryptomonede c
+join z_informatii i on c.id_moneda=i.id_moneda
+where moneda_derivata_din is not null;
+
+--selectati monedele si pretul lor pentru care pretul per moneda este mai mic de 1.5 u.n.
+select c.id_moneda,nume_moneda,data_lansarii,mecanism_de_consens,tip_moneda,p.pret from z_cryptomonede c
+join z_moneda_si_pret m on c.id_moneda=m.id_moneda
+join z_preturi_si_data p on m.pret=p.pret
+where p.pret<1.5;
+
+--selectati cea mai scumpa moneda ca pret unitar 
+select * from z_moneda_si_pret where pret=(select max(pret) from z_preturi_si_data);
+
+--selectare monezi ce au pretul intre minim si media preturilor unitare; 
+select * from z_preturi_si_data where pret between (select min(pret) from z_preturi_si_data) and
+(select avg(pret) from z_preturi_si_data);
+
+--selectare monede ce au pretul mediu mai mare de 1091 + uniune cu cele care au media de pret sub 10818.5
+select id_moneda,avg(pret) from z_moneda_si_pret
+having avg(pret)>1091
+group by id_moneda
+intersect
+select id_moneda,avg(pret) from z_moneda_si_pret
+having avg(pret)>1091 and avg(pret)<10818.5
+group by id_moneda;
+
+--selectati monedele care se afla intr-o ierarhie cu moneda cu id-ul 1
+SELECT ID_moneda,LPAD(' ',LEVEL*2-2)||NUME_moneda "Ierarhie Bitcoin",moneda_derivata_din,LEVEL FROM z_cryptomonede
+CONNECT BY PRIOR ID_moneda=moneda_derivata_din 
+START WITH id_moneda=1;
+
+--selectati monedele parinte ale monedei cu id -ul 7
+SELECT ID_moneda,LPAD(' ',LEVEL*2-2)||NUME_moneda "Ierarhie ChainLink",moneda_derivata_din,LEVEL FROM z_cryptomonede
+CONNECT BY ID_moneda=prior moneda_derivata_din
+START WITH ID_moneda=7;
+
+--stergeti informatiile pentru monedele cu id-ul 2,5,7 si afisati
+--cate inregistrari s-au sters
+set serveroutput on
+begin
+delete from z_informatii where
+id_moneda in(2,5,7);
+if sql%found then
+    dbms_output.put_line('S-au sters '||sql%rowcount||' informatii.');
+else
+    dbms_output.put_line('Nu s-au sters informatiile!');
+end if;
+end;
+rollback;
+
+--setati la 20 000 000 numarul monedelor disponibile pentru monedele
+--care sunt mai mari decat o valoare data
+declare
+nr_inreg varchar(10);
+begin
+update z_preturi_si_data set numar_monede_disponibile=20000000
+where numar_monede_disponibile>&val;
+nr_inreg:=to_char(sql%rowcount);
+if sql%found then
+    dbms_output.put_line('Am modificat '||nr_inreg||' inregistrari.');
+else
+    dbms_output.put_line('Nu s-a modificat nici o inregistrare!');
+end if;
+end;
+rollback;
+
+--modificati mecanismul de consens al monedelor care au un mecanism de consens 
+--de tipul 'Proof of Stake' in unul de tipul 'Proof of Space'
+
+declare
+nr_inreg varchar(10);
+begin
+update z_cryptomonede set mecanism_de_consens='Proof of Space'
+where mecanism_de_consens='Proof of Stake';
+nr_inreg:=to_char(sql%rowcount);
+dbms_output.put_line('S-au modificat '||nr_inreg||' monede');
+end;
+rollback;
+
+--afisati toti fondatorii pentru monedele care sunt de tipul 'Finante Descentralizate'
+declare 
+cursor c_fond is select nume_fondator,zc.id_moneda from z_fondatori zf 
+                    join z_monede_fondatori zmf on zf.id_fondator=zmf.id_fondator
+                    join z_cryptomonede zc on zmf.id_moneda=zc.id_moneda
+                    where tip_moneda like 'Finante%';
+rec_fond c_fond%rowtype;
+begin
+if not c_fond%isopen then
+    open c_fond;
+end if;
+loop
+fetch c_fond into rec_fond;
+exit when c_fond%notfound;
+dbms_output.put_line('Unul din fondatorii monedei cu id-ul ' || rec_fond.id_moneda || ' este '||rec_fond.nume_fondator);
+end loop;
+close c_fond;
+end;
+
+--afisati monedele care au pretul de vanzare intre 1091 si 10818.5
+declare
+cursor c_monezi is select zp.id_moneda,nume_moneda,data_lansarii,avg(pret)as price from z_moneda_si_pret zp
+join z_cryptomonede zc on zp.id_moneda=zc.id_moneda 
+having avg(pret)>1091 and avg(pret)<10818.5
+group by zp.id_moneda,nume_moneda,data_lansarii;
+begin
+for rec_monezi in c_monezi loop
+dbms_output.put_line('Id-ul monedei este '|| rec_monezi.id_moneda ||' avand numele '||rec_monezi.nume_moneda||
+                     ', data lansarii '|| rec_monezi.data_lansarii||' si pretul '||rec_monezi.price);
+end loop;
+end;
+
+--afisati informatii despre fondatorii care au in numele lor grupul de litere 'son'
+declare 
+cursor cursor_fond is select id_fondator,nume_fondator,substr(nume_fondator,-10) from z_fondatori
+where nume_fondator like '%son%';
+begin 
+for rec_fond in cursor_fond loop
+dbms_output.put_line('Id-ul fondatorului este '||rec_fond.id_fondator||' si numele sau este '||rec_fond.nume_fondator);
+end loop;
+end;
+
+--aflati ATH-ul(ATH-all time high) monedei.Afisati numele, pretul maxim, data pretului maxim si numarul de monede disponibile
+declare 
+cursor aflare_ath is select zp.id_moneda, nume_moneda,max(numar_monede_disponibile) as disponibilitate,max(zd.pret) ATH from z_moneda_si_pret zp 
+                            join z_cryptomonede zc on zp.id_moneda=zc.id_moneda
+                            join z_preturi_si_data zd on zp.pret=zd.pret
+                            group by zp.id_moneda,nume_moneda;
+rec_cursor aflare_ath%rowtype;
+begin
+if not aflare_ath%isopen then
+    open aflare_ath;
+end if;
+loop
+fetch aflare_ath into rec_cursor;
+exit when aflare_ath%notfound;
+dbms_output.put_line('Moneda cu id-ul '||rec_cursor.id_moneda||' are numele ' ||rec_cursor.nume_moneda|| ' cu o disponibilitate de '||rec_cursor.disponibilitate|| ' monede si valoarea ATH-ului fiind de '|| rec_cursor.ATH);
+end loop;
+close aflare_ath;
+end;
+
+--afisati capitalizarea de piata maxima pentru o moneda data prin parametru
+--daca moneda nu exista folositi o exceptie definita de user.
+declare
+cursor c_cap(valoare Number) is select id_moneda,max(numar_monede_disponibile) as nr_monezi ,max(zp.pret) as price 
+                                from z_moneda_si_pret zp
+                                join z_preturi_si_data zd on zp.pret=zd.pret
+                                where id_moneda=valoare
+                                group by id_moneda;
+rec_cap c_cap%rowtype;
+begin 
+if not c_cap%isopen then
+    open c_cap(&valoare);
+end if;
+fetch c_cap into rec_cap;
+if c_cap%rowcount=0 then
+  raise_application_error(-20566,'Nu exista aceasta moneda);
+end if;
+dbms_output.put_line('Pentru moneda data ca parametru avem o capitalizare de piata de '||rec_cap.price*rec_cap.nr_monezi);
+close c_cap;
+end;
+/
+
+--afisati numele platformei primit ca id daca platforma nu exista afisati o exceptie
+declare
+v_platforma z_platforme.nume_platforma%type;
+v_id        z_platforme.id_platforma%type;
+begin
+select id_platforma,nume_platforma into v_id,v_platforma from z_platforme
+where id_platforma=&value;
+dbms_output.put_line('Id-ul platformei este '||v_id||' si are numele '||v_platforma);
+exception 
+when no_data_found then
+dbms_output.put_line('Nu exista aceasta plaforma!');
+end;
+
+--afisati data lansarii monedei care are in componenta numelui 'Bitcoin'
+declare
+data_lan z_cryptomonede.data_lansarii%type;
+nume z_cryptomonede.nume_moneda%type;
+begin 
+select data_lansarii,nume_moneda into data_lan,nume from z_cryptomonede
+where nume_moneda like '%ADA%';
+dbms_output.put_line('Moneda are data lansarii '||data_lan);
+exception 
+when too_many_rows then
+dbms_output.put_line('Exista mai multe monede cu un astfel de nume!');
+when no_data_found then
+dbms_output.put_line('Nu exista o moneda cu un astfel de nume!');
+end;
+
+declare
+exceptie_insert exception;
+pragma exception_init(exceptie_insert,-01400);
+begin
+insert into z_cryptomonede values (10,'Polkadot',NULL,NULL,'29.04.2022','Proof of Space','Polkadot Wallet',NULL);
+Exception
+when exceptie_insert then
+dbms_output.put_line('Insert-ul nu a fost facut corect!');
+end;
+
+declare 
+moneda_invalida exception;
+begin
+update z_cryptomonede set mecanism_de_consens='Proof of Space'
+where id_moneda=12;
+if sql%notfound then
+    raise moneda_invalida;
+end if;
+Exception
+when moneda_invalida then
+    dbms_output.put_line('Moneda nu exista pentru a fi adusa la o versiune mai recenta!');
+when others then
+    dbms_output.put_line('A aparut alta eroare');
+end;
+
+create or replace package actualizare_moneda is
+function exista_id (p_moneda number) 
+return boolean;
+
+procedure stergere_moneda 
+(p_moneda in number);
+
+procedure inserare_moneda
+(p_id_moneda in number, p_nume_moneda in varchar2,
+p_site_moneda in varchar2,p_moneda_derivata_din in number,p_data_lansarii in date,
+p_mecanism_de_consens in varchar2, p_portofelul_monedei in varchar2,
+p_tip_moneda in varchar2);
+
+procedure modifica_moneda
+(p_id in number,p_mecanism_de_consens in varchar2);
+
+procedure modifica_moneda 
+(p_id in number,p_moneda_derivata_din in number);
+end;
+
+
+create or replace package body actualizare_moneda is
+--creati o functie care sa verifice existenta unei monezi dupa id
+function exista_id (p_moneda number) 
+return boolean
+is 
+val_id number:=0;
+begin
+select id_moneda into val_id from z_cryptomonede
+where id_moneda=p_moneda;
+if val_id<>0 then
+return true;
+end if;
+exception
+when no_data_found then 
+return false;
+end exista_id;
+
+--creati o procedura ce sa stearga o moneda dupa id.
+create or replace procedure stergere_moneda_aia 
+(p_moneda in number)
+is 
+exceptie_existenta exception;
+begin 
+if actualizare_moneda.exista_id(p_moneda) then 
+delete from z_monede_fondatori 
+where id_moneda=p_moneda;
+delete from z_monede_platforme
+where id_moneda=p_moneda;
+delete from z_moneda_si_pret
+where id_moneda=p_moneda;
+delete from z_informatii 
+where id_moneda=p_moneda;
+delete from z_cryptomonede 
+where id_moneda=p_moneda;
+dbms_output.put_line('Moneda cu id-ul '||p_moneda||' a fost stearsa.'); 
+else raise exceptie_existenta;
+end if;
+exception
+when exceptie_existenta then
+dbms_output.put_line('Nu avem aceasta moneda.');
+end;
+
+--creati o procedura care sa insereze o moneda in mod corespunzator
+procedure inserare_moneda
+(p_id_moneda in number, p_nume_moneda in varchar2,
+p_site_moneda in varchar2,p_moneda_derivata_din in number,p_data_lansarii in date,
+p_mecanism_de_consens in varchar2, p_portofelul_monedei in varchar2,
+p_tip_moneda in varchar2) 
+is 
+exceptie_insert exception;
+begin
+if (p_id_moneda is not null AND not exista_id(p_id_moneda) ) and (p_nume_moneda is not null)
+and (p_site_moneda is not null) and (p_data_lansarii is not null)
+then
+insert into z_cryptomonede 
+(id_moneda,nume_moneda,site_moneda,moneda_derivata_din,data_lansarii,
+mecanism_de_consens,portofelul_monedei,tip_moneda) values
+(p_id_moneda,p_nume_moneda,p_site_moneda,p_moneda_derivata_din,p_data_lansarii,
+p_mecanism_de_consens,p_portofelul_monedei,p_tip_moneda);
+else raise exceptie_insert;
+end if;
+exception
+ when exceptie_insert then
+ dbms_output.put_line('Nu s-a putut efectua insert-ul.');
+end;
+
+procedure modifica_moneda
+(p_id in number,p_mecanism_de_consens in varchar2)
+is 
+mecanism_null exception;
+moneda_inexistenta exception;
+begin
+if p_mecanism_de_consens is not null and exista_id(p_id) then
+    update z_cryptomonede set mecanism_de_consens=p_mecanism_de_consens
+    where id_moneda=p_id;
+elsif p_mecanism_de_consens is null then
+    raise mecanism_null;
+elsif not exista_id(p_id) then
+    raise moneda_inexistenta;
+end if;
+exception 
+    when mecanism_null then
+        dbms_output.put_line('Mecanismul de consens ce se doreste inserat e null.');
+    when moneda_inexistenta then
+        dbms_output.put_line('Moneda nu poate fi modificata pentru ca nu exista.');
+    when others then
+        dbms_output.put_line('A aparut alta problema.');
+end;
+
+procedure modifica_moneda 
+(p_id in number,p_moneda_derivata_din in number) is
+moneda_inexistenta exception;
+begin
+if p_moneda_derivata_din is not null and exista_id(p_id) then
+    update z_cryptomonede set moneda_derivata_din=p_moneda_derivata_din
+    where id_moneda=p_id;
+elsif not exista_id(p_id) or not exista_id(p_moneda_derivata_din) then
+    raise moneda_inexistenta;
+end if;
+exception 
+    when moneda_inexistenta then
+        dbms_output.put_line('Moneda nu poate fi modificata pentru ca nu exista.');
+    when others then
+        dbms_output.put_line('A aparut alta problema.');
+end;
+
+end;
+
+create or replace package verificare_moneda is
+function numar_preturi_moneda
+(p_id number)
+return number;
+
+function cap_max_bitcoin 
+return number;
+
+end;
+
+create or replace package body verificare_moneda is 
+--creati o functie care sa verifice numarul de preturi inregistrate pentru o moneda
+function numar_preturi_moneda
+(p_id number)
+return number
+is
+exceptie_inreg exception;
+nr_preturi number:=0;
+begin
+select count(id_moneda) into nr_preturi from z_moneda_si_pret
+where id_moneda=p_id;
+if nr_preturi=0 then 
+   raise exceptie_inreg;
+end if;
+return nr_preturi;
+exception 
+    when exceptie_inreg then
+    dbms_output.put_line('Nu avem aceasta moneda sau nu sunt inserate preturi.');
+    return nr_preturi;
+end;
+
+--creati o functie ce sa returneze capitalizarea maxima a bitcoinului;
+function cap_max_bitcoin 
+return number 
+is 
+nr_monede number;
+pret number;
+begin
+select max(numar_monede_disponibile) as nr_monezi ,max(zp.pret) as pret into nr_monede,pret
+                                from z_moneda_si_pret zp
+                                join z_preturi_si_data zd on zp.pret=zd.pret
+                                where id_moneda=1;
+dbms_output.put_line(nr_monede*pret);
+return nr_monede*pret;
+end;
+
+end;
+
+--creati un trigger care sa adauge o platforma tuturor monedelor cu id par la insert pe platforme
+--sau sa stearga toate monedele din platforme atunci cand o platforma e stearsa.
+create or replace trigger trig_mon_plat
+after insert or delete on z_platforme
+for each row
+declare
+i number:=2;
+nr_monede number;
+begin
+
+ if inserting then
+    select count(id_moneda) into nr_monede from z_cryptomonede;
+    while i <= nr_monede loop
+    insert into z_monede_platforme (id_moneda,id_platforma) values (i,:new.id_platforma);
+    i:=i+2;
+    end loop;
+ elsif deleting then
+    delete from z_monede_platforme where id_platforma=:old.id_platforma;
+ end if;
+end;
+
+--creati un trigger care sa verifice capitalizarea de piata astfel incat sa fie mai mica decat cea a bitcoinului;
+create or replace trigger verificare_capitalizare
+before insert or update on z_preturi_si_data
+for each row
+declare 
+val_max number;
+capitalizare_incorecta exception;
+Pragma exception_init(capitalizare_incorecta,-20248);   
+begin 
+val_max:=cap_max_bitcoin;
+if (:new.pret*:new.numar_monede_disponibile) > val_max then
+    raise_application_error(-20248,'Pret sau numar de monede invalid!');
+end if;
+end;
+
+--creati un trigger care sa restrictioneze o moneda in a avea mai mult de 4 fondatori pe moneda cu id 3
+create or replace trigger trig_fond
+before insert on z_monede_fondatori
+for each row
+declare
+nr_fond number; 
+begin 
+nr_fond:=numarare_fondatori(3);
+if nr_fond>=4 then
+    raise_application_error(-20256,'Nu puteti insera mai multi fondatori pe moneda');
+else insert into z_monede_fondatori values(3,:new.id_fondator);
+end if;
+end;
+
